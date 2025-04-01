@@ -87,7 +87,7 @@ document.addEventListener('touchstart', function () {
 
 function jump() {
     trex.isJumping = true;
-    trex.velocityY = -15;
+    trex.velocityY = -20;
 }
 
 function update() {
