@@ -33,6 +33,20 @@ const baseSpeed = 5;
 const speedIncrease = 0.1; // Speed increase per point
 const maxSpeed = 15; // Maximum speed cap
 
+// Obstacle settings
+const obstacleSettings = {
+    iceAge: {
+        width: 60,
+        height: 60,
+        speedMultiplier: 0.8  // Moves 20% slower
+    },
+    homoHabilis: {
+        width: 40,
+        height: 40,
+        speedMultiplier: 1.0  // Normal speed
+    }
+};
+
 function getCurrentSpeed() {
     return Math.min(baseSpeed + (score * speedIncrease), maxSpeed);
 }
@@ -91,12 +105,15 @@ function update() {
 
     // Spawn obstacles
     if (frameCount % 150 === 0) {
+        const type = Math.random() < 0.5 ? 'iceAge' : 'homoHabilis';
+        const settings = obstacleSettings[type];
         let obstacle = {
             x: canvas.width,
             y: 270,
-            width: 40,
-            height: 40,
-            type: Math.random() < 0.5 ? 'iceAge' : 'homoHabilis'  // Randomly choose obstacle type
+            width: settings.width,
+            height: settings.height,
+            type: type,
+            speedMultiplier: settings.speedMultiplier
         };
         obstacles.push(obstacle);
     }
@@ -104,7 +121,7 @@ function update() {
     // Update obstacles with current speed
     const currentSpeed = getCurrentSpeed();
     obstacles.forEach((obstacle, index) => {
-        obstacle.x -= currentSpeed;
+        obstacle.x -= currentSpeed * obstacle.speedMultiplier;
         if (obstacle.x + obstacle.width < 0) {
             obstacles.splice(index, 1);
             score++;
