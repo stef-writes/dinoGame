@@ -4,8 +4,13 @@ const ctx = canvas.getContext('2d');
 let trexImage = new Image();
 trexImage.src = 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Chromium_T-Rex-error-offline.svg';
 
-let obstacleImage = new Image();
-obstacleImage.src = 'images/iceage-logo.svg';
+let obstacleImages = {
+    iceAge: new Image(),
+    homoHabilis: new Image()
+};
+
+obstacleImages.iceAge.src = 'images/iceage-logo.svg';
+obstacleImages.homoHabilis.src = 'images/homo-habilis.svg';
 
 let trex = {
     x: 50,
@@ -80,8 +85,9 @@ function update() {
         let obstacle = {
             x: canvas.width,
             y: 270,
-            width: 40,  // Adjusted size for the logo
-            height: 40  // Adjusted size for the logo
+            width: 40,
+            height: 40,
+            type: Math.random() < 0.5 ? 'iceAge' : 'homoHabilis'  // Randomly choose obstacle type
         };
         obstacles.push(obstacle);
     }
@@ -115,7 +121,7 @@ function draw() {
 
     // Draw obstacles
     obstacles.forEach(obstacle => {
-        ctx.drawImage(obstacleImage, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        ctx.drawImage(obstacleImages[obstacle.type], obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     });
 
     // Draw score
