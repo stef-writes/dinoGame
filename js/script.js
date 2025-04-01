@@ -28,6 +28,15 @@ let isGameOver = false;
 let score = 0;
 let highScore = localStorage.getItem('highScore') || 0;
 
+// Game speed settings
+const baseSpeed = 5;
+const speedIncrease = 0.1; // Speed increase per point
+const maxSpeed = 15; // Maximum speed cap
+
+function getCurrentSpeed() {
+    return Math.min(baseSpeed + (score * speedIncrease), maxSpeed);
+}
+
 function restartGame() {
     trex.y = 260;
     trex.velocityY = 0;
@@ -92,9 +101,10 @@ function update() {
         obstacles.push(obstacle);
     }
 
-    // Update obstacles
+    // Update obstacles with current speed
+    const currentSpeed = getCurrentSpeed();
     obstacles.forEach((obstacle, index) => {
-        obstacle.x -= 5;
+        obstacle.x -= currentSpeed;
         if (obstacle.x + obstacle.width < 0) {
             obstacles.splice(index, 1);
             score++;
@@ -124,11 +134,12 @@ function draw() {
         ctx.drawImage(obstacleImages[obstacle.type], obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     });
 
-    // Draw score
+    // Draw score and speed
     ctx.fillStyle = '#000';
     ctx.font = '20px Arial';
     ctx.fillText(`Score: ${score}`, 20, 30);
     ctx.fillText(`High Score: ${highScore}`, 20, 60);
+    ctx.fillText(`Speed: ${Math.round(getCurrentSpeed())}`, 20, 90);
 
     // Draw game over text
     if (isGameOver) {
