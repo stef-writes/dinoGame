@@ -32,9 +32,23 @@ let highScore = localStorage.getItem('highScore') || 0;
 const baseSpeed = 5;
 const speedIncrease = 0.1; // Speed increase per point
 const maxSpeed = 15; // Maximum speed cap
+const levelThreshold = 5; // Level at which obstacles start varying
 
 function getCurrentSpeed() {
     return Math.min(baseSpeed + (score * speedIncrease), maxSpeed);
+}
+
+function getObstacleSpeed(baseSpeed) {
+    if (score < levelThreshold) return baseSpeed;
+    // Random speed variation between 80% and 120% of base speed
+    const variation = 0.8 + Math.random() * 0.4;
+    return baseSpeed * variation;
+}
+
+function getObstacleSpacing() {
+    if (score < levelThreshold) return 150; // Default spacing
+    // Random spacing between 100 and 200 frames
+    return 100 + Math.random() * 100;
 }
 
 function restartGame() {
@@ -89,22 +103,22 @@ function update() {
         trex.velocityY = 0;
     }
 
-    // Spawn obstacles
-    if (frameCount % 150 === 0) {
+    // Spawn obstacles with varying spacing
+    if (frameCount % getObstacleSpacing() === 0) {
         let obstacle = {
             x: canvas.width,
             y: 270,
             width: 40,
             height: 40,
-            type: Math.random() < 0.5 ? 'iceAge' : 'homoHabilis'  // Randomly choose obstacle type
+            type: Math.random() < 0.5 ? 'iceAge' : 'homoHabilis',  // Randomly choose obstacle type
+            speed: getObstacleSpeed(getCurrentSpeed()) // Individual obstacle speed
         };
         obstacles.push(obstacle);
     }
 
-    // Update obstacles with current speed
-    const currentSpeed = getCurrentSpeed();
+    // Update obstacles with individual speeds
     obstacles.forEach((obstacle, index) => {
-        obstacle.x -= currentSpeed;
+        obstacle.x -= obstacle.speed;
         if (obstacle.x + obstacle.width < 0) {
             obstacles.splice(index, 1);
             score++;
@@ -134,12 +148,16 @@ function draw() {
         ctx.drawImage(obstacleImages[obstacle.type], obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     });
 
-    // Draw score and speed
+    // Draw score, speed, and level
     ctx.fillStyle = '#000';
     ctx.font = '20px Arial';
     ctx.fillText(`Score: ${score}`, 20, 30);
     ctx.fillText(`High Score: ${highScore}`, 20, 60);
     ctx.fillText(`Speed: ${Math.round(getCurrentSpeed())}`, 20, 90);
+    if (score >= levelThreshold) {
+        ctx.fillStyle = '#FF4500'; // Orange color for advanced level
+        ctx.fillText('Advanced Level!', 20, 120);
+    }
 
     // Draw game over text
     if (isGameOver) {
