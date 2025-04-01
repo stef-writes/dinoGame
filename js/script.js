@@ -4,6 +4,9 @@ const ctx = canvas.getContext('2d');
 let trexImage = new Image();
 trexImage.src = 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Chromium_T-Rex-error-offline.svg';
 
+let obstacleImage = new Image();
+obstacleImage.src = 'images/iceage-logo.svg';
+
 let trex = {
     x: 50,
     y: 260,
@@ -77,8 +80,8 @@ function update() {
         let obstacle = {
             x: canvas.width,
             y: 270,
-            width: 30,
-            height: 30
+            width: 40,  // Adjusted size for the logo
+            height: 40  // Adjusted size for the logo
         };
         obstacles.push(obstacle);
     }
@@ -111,9 +114,8 @@ function draw() {
     ctx.drawImage(trexImage, trex.x, trex.y, trex.width, trex.height);
 
     // Draw obstacles
-    ctx.fillStyle = '#555';
     obstacles.forEach(obstacle => {
-        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        ctx.drawImage(obstacleImage, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     });
 
     // Draw score
